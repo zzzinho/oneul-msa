@@ -10,7 +10,7 @@ spring:
                 locator:
                     enabled: true
             routes:
-                - id: pieceservice
-                  uri: lb://PIECESERVICE
+                - id: userservice
+                  uri: lb://USERSERVICE
                   predicates:
-                    - Path=/pieces/**
+                    - Path=/user/**

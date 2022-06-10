@@ -9,7 +9,7 @@ spring:
             server:
                 git:
                     default-label: main
-                    uri: https://github.com/zzzinho/onuel-msa
+                    uri: https://github.com/zzzinho/oneul-msa
                     searchPaths: config/gatewayservice
                 encrypt.enabled: false
 eureka:

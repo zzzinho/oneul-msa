@@ -6,6 +6,13 @@ spring:
         web-application-type: reactive
     cloud:
         gateway:
+            globalcors:
+                add-to-simple-url-handler-mapping: true
+                corsConfigurations:
+                    '[/**]':
+                        allowedOrigins: "*"
+                        allowedMethods: "*"
+                        allowedHeaders: "*"
             discovery:
                 locator:
                     enabled: true
@@ -14,3 +21,4 @@ spring:
                   uri: lb://USERSERVICE
                   predicates:
                     - Path=/user/**
+

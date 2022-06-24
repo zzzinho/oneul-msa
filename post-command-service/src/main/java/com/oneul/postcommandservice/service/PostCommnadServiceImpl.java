@@ -55,7 +55,7 @@ public class PostCommnadServiceImpl implements PostCommandService{
 
     @Override
     public Post updatePost(Long id, Post post, Long userId){ 
-        Post postEntity = postCommandRepository.findByIdAndWriter(id, userId).orElseThrow(() -> new NotFoundException(id + " post not found"));
+        Post postEntity = postCommandRepository.findByIdAndUserId(id, userId).orElseThrow(() -> new NotFoundException(id + " post not found"));
         
         postEntity.setConent(post.getContent());
         postEntity = postCommandRepository.save(postEntity);
@@ -78,7 +78,7 @@ public class PostCommnadServiceImpl implements PostCommandService{
 
     @Override
     public void deletePost(Long id, Long userId){
-        postCommandRepository.deleteByIdAndWriter(id, userId);
+        postCommandRepository.deleteByIdAndUserId(id, userId);
 
         kafkaPublisher.sendMessage(
             "post", 

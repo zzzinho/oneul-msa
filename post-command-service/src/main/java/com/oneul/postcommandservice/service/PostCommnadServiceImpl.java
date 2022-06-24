@@ -2,6 +2,8 @@ package com.oneul.postcommandservice.service;
 
 import java.time.LocalDateTime;
 
+import javax.servlet.http.HttpSession;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -9,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.oneul.postcommandservice.dao.PostCommandRepository;
 import com.oneul.postcommandservice.domain.Post;
+import com.oneul.postcommandservice.domain.UserEntity;
 import com.oneul.postcommandservice.error.NotFoundException;
 import com.oneul.postcommandservice.infra.dto.PostMessage;
 import com.oneul.postcommandservice.infra.kafka.KafkaPublisher;
@@ -27,7 +30,8 @@ public class PostCommnadServiceImpl implements PostCommandService{
     }
     
     @Override
-    public Post createPost(Post post, Long userId){
+    public Post createPost(Post post, HttpSession httpSession){
+        UserEntity userEntity = (UserEntity) httpSession.getAttribute("user");
         LocalDateTime createdAt = LocalDateTime.now();
 
         Post postEntity =  postCommandRepository.save(
@@ -35,7 +39,7 @@ public class PostCommnadServiceImpl implements PostCommandService{
                 .content(post.getContent())
                 .createdAt(createdAt)
                 .expiredAt(createdAt.plusHours(24))
-                .userId(userId)
+                .userId(userEntity.getId())
                 .build());
 
         kafkaPublisher.sendMessage(
@@ -49,13 +53,14 @@ public class PostCommnadServiceImpl implements PostCommandService{
             )
         );
     
-        log.info("user: " + userId + " create " + postEntity.toString());
+        log.info("user: " + userEntity.getUsername() + " create " + postEntity.toString());
         return postEntity;
     }
 
     @Override
-    public Post updatePost(Long id, Post post, Long userId){ 
-        Post postEntity = postCommandRepository.findByIdAndUserId(id, userId).orElseThrow(() -> new NotFoundException(id + " post not found"));
+    public Post updatePost(Long id, Post post, HttpSession httpSession){ 
+        UserEntity userEntity = (UserEntity) httpSession.getAttribute("user");
+        Post postEntity = postCommandRepository.findByIdAndUserId(id, userEntity.getId()).orElseThrow(() -> new NotFoundException(id + " post not found"));
         
         postEntity.setConent(post.getContent());
         postEntity = postCommandRepository.save(postEntity);
@@ -77,8 +82,9 @@ public class PostCommnadServiceImpl implements PostCommandService{
     }
 
     @Override
-    public void deletePost(Long id, Long userId){
-        postCommandRepository.deleteByIdAndUserId(id, userId);
+    public void deletePost(Long id, HttpSession httpSession){
+        UserEntity userEntity = (UserEntity) httpSession.getAttribute("user");
+        postCommandRepository.deleteByIdAndUserId(id, userEntity.getId());
 
         kafkaPublisher.sendMessage(
             "post", 

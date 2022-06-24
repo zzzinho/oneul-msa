@@ -10,7 +10,7 @@ spring:
                 git:
                     default-label: main
                     uri: https://github.com/zzzinho/oneul-msa
-                    searchPaths: config/gatewayservice, config/userservice
+                    searchPaths: config/gatewayservice, config/userservice, config/postcommandservice
                 encrypt.enabled: false
 eureka:
     instance:

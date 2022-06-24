@@ -10,8 +10,8 @@ import com.oneul.postcommandservice.domain.Post;
 
 public interface PostCommandRepository extends JpaRepository<Post, Long> {
     Post save(Post post);
-    Optional<Post> findByIdAndWriter(Long id, Long writer);
-    void deleteByIdAndWriter(Long id, Long writer);
+    Optional<Post> findByIdAndWriter(Long id, Long userId);
+    void deleteByIdAndWriter(Long id, Long userId);
     void deleteById(Long id);
     void delete(Post post);
 

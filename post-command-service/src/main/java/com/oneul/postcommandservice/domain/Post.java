@@ -29,17 +29,17 @@ public class Post implements Serializable {
     private LocalDateTime deletedAt;
     @Column(nullable = false)
     private String content;
-    private Long writer;
+    private Long userId;
     
     public Post() {}
 
-    public Post(Long id, LocalDateTime createdAt, LocalDateTime expiredAt, String content, Long writer){
+    public Post(Long id, LocalDateTime createdAt, LocalDateTime expiredAt, String content, Long userId){
         this.id = id;
         this.createdAt = createdAt;
         this.expiredAt = expiredAt;
         this.deletedAt = null;
         this.content = content;
-        this.writer = writer;
+        this.userId = userId;
     }
 
     public Long getId(){
@@ -82,12 +82,12 @@ public class Post implements Serializable {
         this.content = content;
     }
 
-    public Long getWriter(){
-        return this.writer;
+    public Long getUserId(){
+        return this.userId;
     }
     
-    public void setWriter(Long writer){
-        this.writer = writer;
+    public void setUserId(Long userId){
+        this.userId = userId;
     }
     
     @Override
@@ -115,7 +115,7 @@ public class Post implements Serializable {
             + ", expiredAt: " + this.expiredAt
             + ", deletedAt; " + this.deletedAt
             + ", content: " + this.content
-            + "writer: " + this.writer
+            + "userId: " + this.userId
             + "]";
     }
 
@@ -128,7 +128,7 @@ public class Post implements Serializable {
         private String content;
         private LocalDateTime createdAt;
         private LocalDateTime expiredAt;
-        private Long writer;
+        private Long userId;
 
         public Post build(){
             return new Post(
@@ -136,7 +136,7 @@ public class Post implements Serializable {
                 createdAt, 
                 expiredAt,
                 content, 
-                writer);
+                userId);
         }
         public Builder id(Long id){
             this.id = id;
@@ -158,8 +158,8 @@ public class Post implements Serializable {
             return this;
         }
 
-        public Builder writer(Long writer){
-            this.writer = writer;
+        public Builder userId(Long userId){
+            this.userId = userId;
             return this;
         }
     }

@@ -17,8 +17,12 @@ spring:
                 locator:
                     enabled: true
             routes:
-                - id: userservice
-                  uri: lb://USERSERVICE
-                  predicates:
+            -   id: userservice
+                uri: lb://USERSERVICE
+                predicates:
                     - Path=/user/**
+            -   id: postcommandservice
+                uri: lb://POSTCOMMANDSERVICE
+                predicates:
+                    - Path:/post/**
 

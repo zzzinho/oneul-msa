@@ -13,8 +13,8 @@ import com.oneul.postcommandservice.dao.PostCommandRepository;
 import com.oneul.postcommandservice.domain.Post;
 import com.oneul.postcommandservice.domain.UserEntity;
 import com.oneul.postcommandservice.error.NotFoundException;
-import com.oneul.postcommandservice.infra.dto.PostMessage;
-import com.oneul.postcommandservice.infra.kafka.KafkaPublisher;
+import com.oneul.postcommandservice.infra.kafka.MessageType;
+import com.oneul.postcommandservice.infra.kafka.service.MessageQueueFactory;
 
 @Service
 @Transactional
@@ -22,11 +22,11 @@ public class PostCommnadServiceImpl implements PostCommandService{
     private final Logger log = LoggerFactory.getLogger(PostCommnadServiceImpl.class);
 
     private final PostCommandRepository postCommandRepository;
-    private final KafkaPublisher kafkaPublisher;
-    
-    public PostCommnadServiceImpl(PostCommandRepository postCommandRepository, KafkaPublisher kafkaPublisher){
+    private final MessageQueueFactory messageQueueFactory;
+
+    public PostCommnadServiceImpl(PostCommandRepository postCommandRepository, MessageQueueFactory messageQueueFactory){
         this.postCommandRepository = postCommandRepository;
-        this.kafkaPublisher = kafkaPublisher;
+        this.messageQueueFactory = messageQueueFactory;
     }
     
     @Override
@@ -46,16 +46,8 @@ public class PostCommnadServiceImpl implements PostCommandService{
                 .userId(userEntity.getId())
                 .build());
 
-        kafkaPublisher.sendMessage(
-            "post", 
-            new PostMessage(
-                "INSERT",
-                postEntity.getId(), 
-                postEntity.getCreatedAt(), 
-                postEntity.getContent(), 
-                postEntity.getUserId()
-            )
-        );
+        MessageType messageType = MessageType.INSERT;
+        messageQueueFactory.getMessageType(messageType).apply(postEntity);
     
         log.info("user: " + userEntity.getUsername() + " create " + postEntity.toString());
         return postEntity;
@@ -69,16 +61,8 @@ public class PostCommnadServiceImpl implements PostCommandService{
         postEntity.setConent(post.getContent());
         postEntity = postCommandRepository.save(postEntity);
 
-        kafkaPublisher.sendMessage(
-            "post", 
-            new PostMessage(
-                "UPDATE",
-                postEntity.getId(), 
-                postEntity.getCreatedAt(), 
-                postEntity.getContent(), 
-                postEntity.getUserId()
-            )
-        );
+        MessageType messageType = MessageType.UPDATE;
+        messageQueueFactory.getMessageType(messageType).apply(postEntity);
 
         log.info(postEntity.toString() + " is updated");
 
@@ -88,14 +72,12 @@ public class PostCommnadServiceImpl implements PostCommandService{
     @Override
     public void deletePost(Long id, HttpSession httpSession){
         UserEntity userEntity = (UserEntity) httpSession.getAttribute("user");
+        Post postEntity = postCommandRepository.findByIdAndUserId(id, userEntity.getId())
+                                                .orElseThrow(() -> new NotFoundException(id + " post not found"));
         postCommandRepository.deleteByIdAndUserId(id, userEntity.getId());
 
-        kafkaPublisher.sendMessage(
-            "post", 
-            PostMessage.builder()
-                .type("DELETE")
-                .id(id)
-                .build());
+        MessageType messageType = MessageType.DELETE;
+        messageQueueFactory.getMessageType(messageType).apply(postEntity);
     
         log.info("post " + id + " is deleted");
     }

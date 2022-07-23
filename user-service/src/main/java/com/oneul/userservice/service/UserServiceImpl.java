@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.oneul.userservice.dao.UserRepository;
 import com.oneul.userservice.domain.UserEntity;
+import com.oneul.userservice.exception.NotFoundException;
 import com.oneul.userservice.exception.UserAlreadyExistException;
 import com.oneul.userservice.exception.WrongUsernameAndPasswordException;
 
@@ -52,7 +53,7 @@ public class UserServiceImpl implements UserService {
         }
 
         log.info("login user: " + userEntity.toString());
-        httpSession.setAttribute("user",user);
+        httpSession.setAttribute("user",user.getId());
 
         log.info("session id: " + httpSession.getId());
         log.info("session value: " + httpSession.getAttribute("user"));
@@ -62,8 +63,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void logout(HttpSession httpSession){
-        UserEntity user = (UserEntity) httpSession.getAttribute("user");
-        if(user == null) return ;
+        Long userId = (Long) httpSession.getAttribute("user");
+        if(userId == null) return ;
+        UserEntity user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("wrong user ID"));
+        
         log.info("session id: " + httpSession.getId());
         log.info("session value: " + httpSession.getAttribute("user"));
         httpSession.removeAttribute("user");

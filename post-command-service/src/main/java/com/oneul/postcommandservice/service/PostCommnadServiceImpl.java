@@ -31,9 +31,7 @@ public class PostCommnadServiceImpl implements PostCommandService{
     
     @Override
     public Post createPost(Post post, HttpSession httpSession){
-        log.info("test");
         Object object = httpSession.getAttribute("user");
-        log.info("test");
         log.info(object.toString());
         UserEntity userEntity = (UserEntity) httpSession.getAttribute("user");
         LocalDateTime createdAt = LocalDateTime.now();

@@ -23,6 +23,12 @@ spring:
                 uri: lb://USERSERVICE
                 predicates:
                     - Path=/user/**
+                    
+            -   id: postqueryservice
+                uri: lb://POSTQUERYSERVICE
+                predicates:
+                    - Method=GET
+                    - Path=/post/**
 
             -   id: postcommandservice
                 uri: lb://POSTCOMMANDSERVICE
@@ -30,9 +36,5 @@ spring:
                     - Method=POST,PUT,DELETE
                     - Path=/post/**
                     
-            -   id: postqueryservice
-                uri: lb://POSTQUERYSERVICE
-                predicates:
-                    - Method=GET
-                    - Path=/post/**
+            
 

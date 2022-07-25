@@ -12,12 +12,12 @@ public class PostMessage {
 
     public PostMessage() {}
 
-    public PostMessage(String type, Long id, LocalDateTime createdAt, String content, String writer){
+    public PostMessage(String type, Long id, LocalDateTime createdAt, String content, String userId){
         this.type = type;
         this.id = id; 
         this.createdAt = createdAt;
         this.content = content;
-        this.wirter = writer;
+        this.wirter = userId;
     }
 
     public String getType() {
@@ -52,12 +52,12 @@ public class PostMessage {
         this.content = content;
     }
 
-    public String getWriter(){
+    public String getUserId(){
         return this.wirter;
     }
 
-    public void setWriter(String writer){
-        this.wirter = writer;
+    public void setUserId(String userId){
+        this.wirter = userId;
     }
 
     @Override
@@ -84,7 +84,7 @@ public class PostMessage {
             + ", id: " + this.id
             + ", createdAt: " + this.createdAt
             + ", content: " + this.content
-            + ", writer: " + this.wirter
+            + ", userId: " + this.wirter
             + "]";
     }
 
@@ -97,7 +97,7 @@ public class PostMessage {
         private Long id;
         private String content;
         private LocalDateTime createdAt;
-        private String writer;
+        private String userId;
 
         public PostMessage build(){
             return new PostMessage(
@@ -105,7 +105,7 @@ public class PostMessage {
                 id, 
                 createdAt, 
                 content, 
-                writer);
+                userId);
         }
 
         public Builder type(String type){
@@ -128,8 +128,8 @@ public class PostMessage {
             return this;
         }
 
-        public Builder writer(String writer){
-            this.writer = writer;
+        public Builder userId(String userId){
+            this.userId = userId;
             return this;
         }
     }

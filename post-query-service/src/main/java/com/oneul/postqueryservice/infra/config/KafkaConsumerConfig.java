@@ -11,9 +11,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
-import org.springframework.kafka.support.serializer.JsonDeserializer;
-
-import com.oneul.postqueryservice.infra.dto.PostMessage;
 
 @Configuration
 public class KafkaConsumerConfig {
@@ -24,19 +21,19 @@ public class KafkaConsumerConfig {
     private String groupId;
 
     @Bean
-    public ConsumerFactory<String, PostMessage> consumerFactory() {
+    public ConsumerFactory<String, String> consumerFactory() {
         Map<String, Object> configs = new HashMap<>();
         configs.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         configs.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
 
         return new DefaultKafkaConsumerFactory<>(configs,
                                                  new StringDeserializer(),
-                                                 new JsonDeserializer<>(PostMessage.class));
+                                                 new StringDeserializer());
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, PostMessage> postListener() {
-        ConcurrentKafkaListenerContainerFactory<String, PostMessage> factory = new ConcurrentKafkaListenerContainerFactory<>();
+    public ConcurrentKafkaListenerContainerFactory<String, String> postListener() {
+        ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
         return factory;
     }

@@ -5,6 +5,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.oneul.postqueryservice.dao.PostQueryRepository;
 import com.oneul.postqueryservice.domain.PostDocument;
 import com.oneul.postqueryservice.error.NotFoundException;
@@ -20,7 +22,10 @@ public class KafkaSubscriber {
     }
 
     @KafkaListener(topics = "post", containerFactory = "postListener")
-    public void listen(PostMessage postMessage){
+    public void listen(String test) throws Exception {
+        ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+        PostMessage postMessage = objectMapper.readValue(test, PostMessage.class);
+        
         log.info("message listen: " + postMessage.toString());
         
         if(postMessage.getType().equals("INSERT")){
@@ -28,7 +33,7 @@ public class KafkaSubscriber {
                 postMessage.getId(), 
                 postMessage.getCreatedAt(), 
                 postMessage.getContent(), 
-                postMessage.getWriter()));
+                postMessage.getUserId()));
         } else if(postMessage.getType().equals("UPDATE")){
             PostDocument postDocument = postQueryRepository.findById(postMessage.getId())
                                                             .orElseThrow(() ->new NotFoundException("query repository doesn't have " + postMessage.getId()));

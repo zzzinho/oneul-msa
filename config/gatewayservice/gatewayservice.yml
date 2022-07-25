@@ -28,7 +28,7 @@ spring:
                 uri: lb://POSTQUERYSERVICE
                 predicates:
                     - Method=GET
-                    - Path=/post/**
+                    - Path=/post**
 
             -   id: postcommandservice
                 uri: lb://POSTCOMMANDSERVICE

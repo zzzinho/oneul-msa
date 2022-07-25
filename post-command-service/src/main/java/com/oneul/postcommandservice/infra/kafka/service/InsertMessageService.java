@@ -27,7 +27,7 @@ public class InsertMessageService implements MessageQueueService {
             post.getId(), 
             post.getCreatedAt(), 
             post.getContent(), 
-            post.getUserId());
+            post.getWriterId());
         kafkaPublisher.sendMessage("post", postMessage);
         return postMessage;
     }

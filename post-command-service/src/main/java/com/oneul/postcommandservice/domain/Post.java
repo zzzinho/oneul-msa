@@ -18,7 +18,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-@Table(indexes = @Index(name = "i_post", columnList="createdAt"))
+@Table(name = "posts", indexes = @Index(name = "i_post", columnList="createdAt"))
 public class Post implements Serializable {
     @Id @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -29,17 +29,17 @@ public class Post implements Serializable {
     private LocalDateTime deletedAt;
     @Column(nullable = false)
     private String content;
-    private Long userId;
+    private Long writerId;
     
     public Post() {}
 
-    public Post(Long id, LocalDateTime createdAt, LocalDateTime expiredAt, String content, Long userId){
+    public Post(Long id, LocalDateTime createdAt, LocalDateTime expiredAt, String content, Long writerId){
         this.id = id;
         this.createdAt = createdAt;
         this.expiredAt = expiredAt;
         this.deletedAt = null;
         this.content = content;
-        this.userId = userId;
+        this.writerId = writerId;
     }
 
     public Long getId(){
@@ -82,12 +82,12 @@ public class Post implements Serializable {
         this.content = content;
     }
 
-    public Long getUserId(){
-        return this.userId;
+    public Long getWriterId(){
+        return this.writerId;
     }
     
-    public void setUserId(Long userId){
-        this.userId = userId;
+    public void setwriterId(Long writerId){
+        this.writerId = writerId;
     }
     
     @Override
@@ -115,7 +115,7 @@ public class Post implements Serializable {
             + ", expiredAt: " + this.expiredAt
             + ", deletedAt; " + this.deletedAt
             + ", content: " + this.content
-            + "userId: " + this.userId
+            + "writerId: " + this.writerId
             + "]";
     }
 
@@ -128,7 +128,7 @@ public class Post implements Serializable {
         private String content;
         private LocalDateTime createdAt;
         private LocalDateTime expiredAt;
-        private Long userId;
+        private Long writerId;
 
         public Post build(){
             return new Post(
@@ -136,7 +136,7 @@ public class Post implements Serializable {
                 createdAt, 
                 expiredAt,
                 content, 
-                userId);
+                writerId);
         }
         public Builder id(Long id){
             this.id = id;
@@ -158,8 +158,8 @@ public class Post implements Serializable {
             return this;
         }
 
-        public Builder userId(Long userId){
-            this.userId = userId;
+        public Builder writerId(Long writerId){
+            this.writerId = writerId;
             return this;
         }
     }

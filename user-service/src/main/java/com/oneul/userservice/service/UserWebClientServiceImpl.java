@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.oneul.userservice.dao.UserRepository;
 import com.oneul.userservice.domain.UserEntity;
+import com.oneul.userservice.dto.UserResponse;
 import com.oneul.userservice.exception.NotFoundException;
 
 @Service
@@ -16,9 +17,12 @@ public class UserWebClientServiceImpl implements UserWebClientService {
         this.userRepository = userRepository;
     }
 
-    public UserEntity findByUserId(Long userId) {
+    public UserResponse findByUserId(Long userId) {
         UserEntity userEntity = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("wrong user Id"));
-
-        return userEntity;
+        UserResponse userResponse = UserResponse.builder()
+                                                .id(userEntity.getId())
+                                                .username(userEntity.getUsername())
+                                                .build();
+        return userResponse;
     }
 }

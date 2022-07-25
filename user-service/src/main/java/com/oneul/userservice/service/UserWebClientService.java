@@ -1,7 +1,7 @@
 package com.oneul.userservice.service;
 
-import com.oneul.userservice.domain.UserEntity;
+import com.oneul.userservice.dto.UserResponse;
 
 public interface UserWebClientService {
-    UserEntity findByUserId(Long userId);
+    UserResponse findByUserId(Long userId);
 }

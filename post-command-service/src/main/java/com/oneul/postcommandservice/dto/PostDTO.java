@@ -9,13 +9,13 @@ public class PostDTO {
     @NotBlank
     private String content; 
     @NotNull
-    private Long userId;
+    private Long writerId;
 
     public PostDTO() {}
 
-    public PostDTO(String content, Long userId){
+    public PostDTO(String content, Long writerId){
         this.content = content;
-        this.userId = userId;
+        this.writerId = writerId;
     }
 
     public void setContent(String content){
@@ -26,18 +26,18 @@ public class PostDTO {
         return this.content;
     }
 
-    public void setUserId(Long userId){
-        this.userId = userId;
+    public void setUserId(Long writerId){
+        this.writerId = writerId;
     }
 
     public Long getUserId(){
-        return this.userId;
+        return this.writerId;
     }
     
     public Post toEntity() {
         return Post.builder()
             .content(content)
-            .userId(userId)
+            .writerId(writerId)
             .build();
     }
 }

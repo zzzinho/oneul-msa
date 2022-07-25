@@ -12,8 +12,8 @@ import com.oneul.postcommandservice.domain.Post;
 @Repository
 public interface PostCommandRepository extends JpaRepository<Post, Long> {
     Post save(Post post);
-    Optional<Post> findByIdAndUserId(Long id, Long userId);
-    void deleteByIdAndUserId(Long id, Long userId);
+    Optional<Post> findByIdAndWriterId(Long id, Long writerId);
+    void deleteByIdAndWriterId(Long id, Long userId);
     void deleteById(Long id);
     void delete(Post post);
 

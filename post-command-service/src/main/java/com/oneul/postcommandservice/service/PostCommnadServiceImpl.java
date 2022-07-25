@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.oneul.postcommandservice.dao.PostCommandRepository;
 import com.oneul.postcommandservice.domain.Post;
-import com.oneul.postcommandservice.domain.UserEntity;
 import com.oneul.postcommandservice.dto.UserResponse;
 import com.oneul.postcommandservice.error.ExpiredSessionException;
 import com.oneul.postcommandservice.error.NotFoundException;
@@ -62,8 +61,14 @@ public class PostCommnadServiceImpl implements PostCommandService{
 
     @Override
     public Post updatePost(Long id, Post post, HttpSession httpSession){ 
-        UserEntity userEntity = (UserEntity) httpSession.getAttribute("user");
-        Post postEntity = postCommandRepository.findByIdAndWriterId(id, userEntity.getId()).orElseThrow(() -> new NotFoundException(id + " post not found"));
+        Object object = httpSession.getAttribute("user");
+        if(object == null){
+            throw new ExpiredSessionException("session is expired");
+        }
+        log.info(object.toString());
+        Long userId = (Long) httpSession.getAttribute("user");
+        UserResponse userResponse = userWebClient.getUserById(userId);
+        Post postEntity = postCommandRepository.findByIdAndWriterId(id, userResponse.getId()).orElseThrow(() -> new NotFoundException(id + " post not found"));
         
         postEntity.setConent(post.getContent());
         postEntity = postCommandRepository.save(postEntity);
@@ -78,10 +83,16 @@ public class PostCommnadServiceImpl implements PostCommandService{
 
     @Override
     public void deletePost(Long id, HttpSession httpSession){
-        UserEntity userEntity = (UserEntity) httpSession.getAttribute("user");
-        Post postEntity = postCommandRepository.findByIdAndWriterId(id, userEntity.getId())
+        Object object = httpSession.getAttribute("user");
+        if(object == null){
+            throw new ExpiredSessionException("session is expired");
+        }
+        log.info(object.toString());
+        Long userId = (Long) httpSession.getAttribute("user");
+        UserResponse userResponse = userWebClient.getUserById(userId);
+        Post postEntity = postCommandRepository.findByIdAndWriterId(id, userResponse.getId())
                                                 .orElseThrow(() -> new NotFoundException(id + " post not found"));
-        postCommandRepository.deleteByIdAndWriterId(id, userEntity.getId());
+        postCommandRepository.deleteByIdAndWriterId(id, userResponse.getId());
 
         MessageType messageType = MessageType.DELETE;
         messageQueueFactory.getMessageType(messageType).apply(postEntity);

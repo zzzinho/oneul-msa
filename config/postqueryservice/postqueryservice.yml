@@ -1,0 +1,18 @@
+spring:
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: oneul
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: post
+      auto-offset-reset: earliest
+
+logging:
+  level:
+    web: DEBUG
+    org:
+      hibernate:
+        SQL: DEBUG
